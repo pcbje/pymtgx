@@ -21,7 +21,7 @@ class Pymtgx(networkx.Graph):
 	def register_entities(self, path):
 		z = zipfile.ZipFile(path, "r")
 
-		for filename in z.namelist():			
+		for filename in z.namelist():	
 			element = ElementTree.fromstring(z.read(filename))
 
 			if element.tag == 'MaltegoEntity':
@@ -98,12 +98,3 @@ class MaltegoWriter(graphml.GraphMLWriter):
 		for k,v in data.items():
 			v.data.attrib['key'] = self.get_key(k, k, scope, None)
 			xml_obj.append(v.data)
-		
-pymtgx = Pymtgx()
-pymtgx.register_entities("../../Downloads/casefile_entities.mtz")
-id1 = pymtgx.add_node("maltego.Person", 'Petter Bjelland')
-id2 = pymtgx.add_node("maltego.Person", 'Jon Doe')
-id3 = pymtgx.add_node("maltego.Missile", 'petter.bjelland@hig.no')
-pymtgx.add_edge(id1, id2)
-pymtgx.add_edge(id1, id3)
-pymtgx.create_mtgx("graph.mtgx")
