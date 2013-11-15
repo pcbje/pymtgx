@@ -1,7 +1,7 @@
 pymtgx
 ======
 
-Python API for generating Maltego MTGX files.
+Python API for generating Maltego mtgx files.
 
 #### Install
 
