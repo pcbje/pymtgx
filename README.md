@@ -9,11 +9,9 @@ Python API for generating Maltego MTGX files.
 
 #### Usage
 
-<pre><code>>>> import pymtgx
->>> pymtgx = pymtgx.Pymtgx()
->>> pymtgx.add_node("maltego.EmailAddress", "some@email.com")
-'n0'
->>> pymtgx.add_node("maltego.EmailAddress", "another@email.com")
-'n1'
->>> pymtgx.add_edge("n0", "n1")
->>> pymtgx.create_mtgx("example.mtgx")</pre></code>
+<pre><code>import pymtgx
+pymtgx = pymtgx.Pymtgx()
+id1 = pymtgx.add_node("maltego.EmailAddress", "some@email.com")
+id2 = pymtgx.add_node("maltego.EmailAddress", "another@email.com")
+pymtgx.add_edge(id1, id2)
+pymtgx.create_mtgx("example.mtgx")</pre></code>
