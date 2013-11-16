@@ -8,11 +8,15 @@ from xml.etree.cElementTree import Element, SubElement, tostring
 from networkx.readwrite import graphml
 
 default_types = {
-  'maltego.Person': {"name": "person.fullname", "displayName": "Full name"},
-  'maltego.EmailAddress': {"name": "email", "displayName": "Email Address"}
+  'maltego.Person': {"name": "person.fullname"},
+  'maltego.Alias': {"name": "alias"},
+  'maltego.EmailAddress': {"name": "email"},
+  'maltego.IPv4Address': {"name": "ipv4-address"},
+  'maltego.URL': {"name": "short-title"},
+  'maltego.MobileComputer': {"name": "device"}
 }
 
-class Pymtgx(networkx.Graph):
+class Pymtgx(networkx.DiGraph):
   def __init__(self):		
     super(Pymtgx, self).__init__()
     self.node_id = 0
@@ -37,9 +41,7 @@ class Pymtgx(networkx.Graph):
       }			
     elif field != None:
       self.entities[element.attrib['id']] = {
-        'name': field.attrib['name'],
-        'displayName': field.attrib['displayName'],
-        'dataType': field.attrib['type']			
+        'name': field.attrib['name']
       }	
 		
   def add_node(self, entityType, data):
@@ -87,7 +89,6 @@ class MaltegoEntity(object):
 		
     propertyElement.attrib = {
       'name': prop.get('name'),
-      'displayName': prop.get('displayName'),
       'type': prop.get('dataType', 'string')
     }
 		
