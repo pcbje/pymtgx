@@ -38,7 +38,7 @@ class PymtgxUnitTest(unittest.TestCase):
 
     id1 = mtgx.add_node("maltego.Person", "Jon Doe")
     id2 = mtgx.add_node("maltego.EmailAddress", "jon.doe@mail.com")
-    id2 = mtgx.add_node("maltego.Person", "Jimmy")
+    
     mtgx.add_edge(id1, id2)
 
     for node in mtgx.positions:
@@ -69,7 +69,6 @@ class PymtgxUnitTest(unittest.TestCase):
     prop = entity.getchildren()[0].getchildren()[0]
 
     self.assertEqual("person.fullname", prop.attrib['name'])
-    self.assertEqual("Full name", prop.attrib['displayName'])
     self.assertEqual("string", prop.attrib['type'])
 
     value = prop.getchildren()[0].text
@@ -79,17 +78,15 @@ class PymtgxUnitTest(unittest.TestCase):
   def testRegisterEntities(self):
     mtgx = pymtgx.Pymtgx()
 
-    self.assertEqual(2, len(mtgx.entities))
+    self.assertEqual(6, len(mtgx.entities))
 
     mtgx.register_entities("test_entities.mtz")
 
-    self.assertEqual(4, len(mtgx.entities))
+    self.assertEqual(8, len(mtgx.entities))
 
     registered_entity = mtgx.entities["maltego.Humbug"]
 
     self.assertEqual("humbug.Id", registered_entity['name'])
-    self.assertEqual("ID", registered_entity['displayName'])
-    self.assertEqual("string", registered_entity['dataType'])
-
+    
 if __name__ == '__main__':
   unittest.main()

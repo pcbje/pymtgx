@@ -53,7 +53,8 @@ class Pymtgx(networkx.DiGraph):
       }			
     elif field != None:
       self.entities[element.attrib['id']] = {
-        'name': field.attrib['name']
+        'name': field.attrib['name'],
+        'dataType': field.attrib['type']
       }	
 		
   def add_node(self, entityType, data):
@@ -91,6 +92,8 @@ class Pymtgx(networkx.DiGraph):
     writer = MaltegoWriter(encoding=encoding,prettyprint=prettyprint)
     
     writer.add_graph_element(self)
+
+    writer.xml.find('.//key[@attr.name="EntityRenderer"]').set('yfiles.type', "nodegraphics")
 		
     with tempfile.NamedTemporaryFile() as temp:
       temp.write(str(writer).encode())
@@ -146,15 +149,7 @@ class EntityRenderer(object):
     SubElement(propertyElement, "mtg:Value").text = value
 
 class MaltegoWriter(graphml.GraphMLWriter):
-  yfiles = {
-    "EntityRenderer": "nodegraphics"
-  }
-
-  def add_attributes(self, scope, xml_obj, data, default):
-    for key in self.xml.findall("key"):
-      if key.get("attr.name") in self.yfiles:
-        key.set("yfiles.type", self.yfiles[key.get("attr.name")])
-
+  def add_attributes(self, scope, xml_obj, data, default):        
     for k,v in data.items():            
       v.data.attrib['key'] = self.get_key(k, k, scope, None)
       xml_obj.append(v.data)
