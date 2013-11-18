@@ -33,6 +33,26 @@ class PymtgxUnitTest(unittest.TestCase):
 
     self.assertEqual(1, len(mtgx.edges()))
 
+  def testLayout(self):
+    mtgx = pymtgx.Pymtgx()
+
+    id1 = mtgx.add_node("maltego.Person", "Jon Doe")
+    id2 = mtgx.add_node("maltego.EmailAddress", "jon.doe@mail.com")
+    id2 = mtgx.add_node("maltego.Person", "Jimmy")
+    mtgx.add_edge(id1, id2)
+
+    for node in mtgx.positions:
+      self.assertFalse('x' in mtgx.positions[node].position.attrib)
+      self.assertFalse('y' in mtgx.positions[node].position.attrib)
+
+    mtgx.layout('spring_layout')
+
+    for node in mtgx.positions:
+      self.assertNotEqual(None, mtgx.positions[node].position.attrib['x'])
+      self.assertNotEqual(None, mtgx.positions[node].position.attrib['y'])
+
+    mtgx.create('test5')
+
   def testNodeFormat(self):
     mtgx = pymtgx.Pymtgx()
 
