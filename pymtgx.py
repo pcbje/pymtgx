@@ -76,19 +76,32 @@ class Pymtgx(networkx.DiGraph):
     return current_id
 
   def layout(self, layout='spring_layout', space=100):
-    layout_func = getattr(networkx, layout)
+    try: 
+      import matplotlib
 
-    scale = len(self.nodes()) * space
+      layout_func = getattr(networkx, layout)
 
-    positions = layout_func(self, scale=scale)
+      scale = len(self.nodes()) * space
 
-    for pos in positions:
-      self.positions[pos].position.attrib = {
-        'x': str(int(positions[pos][0])),
-        'y': str(int(positions[pos][1]))
-      }
+      positions = layout_func(self, scale=scale)
 
-  def create(self, path, encoding='utf-8',prettyprint=True):    
+      for pos in positions:
+        self.positions[pos].position.attrib = {
+          'x': str(int(positions[pos][0])),
+          'y': str(int(positions[pos][1]))
+        }
+    except:
+      for pos in self.positions:
+        self.positions[pos].position.attrib = {
+          'x': '0',
+          'y': '0'
+        }
+
+
+  def create(self, path, encoding='utf-8',prettyprint=True, do_layout=True, layout='spring_layout', space=100):    
+    if do_layout:
+      self.layout(layout, space)
+
     writer = MaltegoWriter(encoding=encoding,prettyprint=prettyprint)
     
     writer.add_graph_element(self)
