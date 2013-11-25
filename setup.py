@@ -10,7 +10,7 @@ setup(
   license='Apache2',    
   scripts=[],
   zip_safe=False,
-  package_data={},
+  packages=['src'],
   install_requires=[
     'networkx'
   ]
