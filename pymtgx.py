@@ -75,6 +75,9 @@ class Pymtgx(networkx.DiGraph):
 
     return current_id
 
+  def add_edge(self, n0, n1, label=''):
+    super(Pymtgx, self).add_edge(n0, n1, dict(MaltegoLink=MaltegoLink(label)))
+
   def layout(self, layout='spring_layout', space=100):
     try: 
       import matplotlib
@@ -97,7 +100,6 @@ class Pymtgx(networkx.DiGraph):
           'y': '0'
         }
 
-
   def create(self, path, encoding='utf-8',prettyprint=True, layout='spring_layout', space=100):    
     self.layout(layout, space)
 
@@ -106,7 +108,7 @@ class Pymtgx(networkx.DiGraph):
     writer.add_graph_element(self)
 
     writer.xml.find('.//key[@attr.name="EntityRenderer"]').set('yfiles.type', "nodegraphics")
-		
+
     with tempfile.NamedTemporaryFile() as temp:
       temp.write(str(writer).encode())
       temp.flush()
@@ -138,6 +140,21 @@ class MaltegoEntity(object):
     }
 		
     SubElement(propertyElement, "mtg:Value").text = value
+
+class MaltegoLink(MaltegoEntity):
+  def __init__(self, label):
+    self.data = Element("data")   
+
+    linkElement = SubElement(self.data, "mtg:MaltegoLink")
+
+    linkElement.attrib = {
+      'xmlns:mtg': 'http://maltego.paterva.com/xml/mtgx',
+      'type': 'maltego.link.manual-link'
+    }
+
+    propertiesElement = SubElement(linkElement, "mtg:Properties")   
+
+    self.add_entity_property(propertiesElement, {'name': 'maltego.link.manual.type'}, label)
 
 class EntityRenderer(object):
   def __init__(self):    
