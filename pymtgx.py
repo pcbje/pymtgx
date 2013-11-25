@@ -98,9 +98,8 @@ class Pymtgx(networkx.DiGraph):
         }
 
 
-  def create(self, path, encoding='utf-8',prettyprint=True, do_layout=True, layout='spring_layout', space=100):    
-    if do_layout:
-      self.layout(layout, space)
+  def create(self, path, encoding='utf-8',prettyprint=True, layout='spring_layout', space=100):    
+    self.layout(layout, space)
 
     writer = MaltegoWriter(encoding=encoding,prettyprint=prettyprint)
     
