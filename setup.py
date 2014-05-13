@@ -5,12 +5,11 @@ setup(
   name='pymtgx',
   author='Petter Bjelland',
   version='0.1',
-  author_email='petter.bjellans@hig.no',
+  author_email='petter.bjelland@gmail.com',
   description='API for generating Maltego MTGX file.',
   license='Apache2',    
   scripts=[],
-  zip_safe=False,
-  packages=['src'],
+  packages=['pymtgx'],
   install_requires=[
     'networkx'
   ]
