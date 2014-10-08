@@ -1,0 +1,3 @@
+Col1:Person > Col3:EmailAddress | Edge label 1
+Col1:Person > Col2:Person | Edge label 2
+Col3:EmailAddress > Col2:Person | Edge label 3

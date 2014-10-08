@@ -1,0 +1,3 @@
+0:Person > 2:EmailAddress | Edge label 1
+0:Person > 1:Person | Edge label 2
+2:EmailAddress > 1:Person | Edge label 3

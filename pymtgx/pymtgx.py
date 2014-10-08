@@ -33,6 +33,7 @@ class Pymtgx(networkx.DiGraph):
     self.positions = {}
     self.node_id = 0
     self.entities = default_types
+    self.node_cache = {}
 
   def register_entities(self, path):
     z = zipfile.ZipFile(path, "r")
@@ -58,7 +59,14 @@ class Pymtgx(networkx.DiGraph):
       }	
 		
   def add_node(self, entityType, data):
+    node_key = entityType + str(data)
+
+    if node_key in self.node_cache:
+      return self.node_cache[node_key]
+
     current_id = 'n' + str(self.node_id)
+
+    self.node_cache[node_key] = current_id
 
     self.node_id += 1		
 		
