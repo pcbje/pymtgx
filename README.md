@@ -54,6 +54,12 @@ optional arguments:
                         Use column names in format specification. If not, the
                         columns in the specifications are 0-indexed.</pre></code>
 
+The general syntax for entity and edge specifications is:
+
+<pre><code>[FORM_COLUMN]:[FROM_ENTITY_TYPE] > [TO_COLUMN]:[TO_ENTITY_TYPE] | [EDGE LABEL]</pre></code>
+
+The entity types field must match one of the entity types registered using the '-e' option, without the 'maltego.' prefix.
+
 ##### Example for specification file using column index:
 
 <pre><code>0:Person > 2:EmailAddress | Edge label 1
