@@ -49,6 +49,8 @@ class Importer(object):
 
 		self.output_file = output_file
 
+		self.number_of_edges = 0
+
 		# Register entity specifications
 		for entity_file in entity_files:
 			self.mtgx.register_entities(entity_file)
@@ -74,7 +76,7 @@ class Importer(object):
 					continue
 				
 				# Parse the line into maltego entities and edges.
-				self._parse_line(line)			
+				self.number_of_edges += self._parse_line(line)			
 
 		# Calculate the number of lines we've parsed.
 		self.number_of_lines = lines - skip_lines
@@ -133,12 +135,19 @@ class Importer(object):
 		edges = 0
 
 		for edge_def in self.format_spec:
-			n0 = self.mtgx.add_node('maltego.' + edge_def['from_type'], line[edge_def['from_index']])
-			n1 = self.mtgx.add_node('maltego.' + edge_def['to_type'], line[edge_def['to_index']])
+			has_from = line[edge_def['from_index']] != ''
+			has_to = line[edge_def['to_index']] != ''
 
-			self.mtgx.add_edge(n0, n1, edge_def['edge_label'])
+			if has_from:
+				n0 = self.mtgx.add_node('maltego.' + edge_def['from_type'], line[edge_def['from_index']])
 
-			edges += 1
+			if has_to:
+				n1 = self.mtgx.add_node('maltego.' + edge_def['to_type'], line[edge_def['to_index']])
+
+			if has_from and has_to:
+				self.mtgx.add_edge(n0, n1, edge_def['edge_label'])
+
+				edges += 1
 
 		return edges
 

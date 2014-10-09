@@ -39,6 +39,8 @@ class PymtgxUnitTest(unittest.TestCase):
     self.assertEqual('Person', importer.format_spec[2]['to_type'])
     self.assertEqual('Edge label 3', importer.format_spec[2]['edge_label'])
 
+    self.assertEqual(6, importer.number_of_edges)
+
   def testReadMappedformat_spec(self):
     importer = pymtgx.Importer(input_file='test/importer/data.csv', 
       format_spec_file='test/importer/mapped.format', 
@@ -72,6 +74,19 @@ class PymtgxUnitTest(unittest.TestCase):
     row = ['X', 'Y', 'Z']
 
     self.assertEqual(3, importer._parse_line(row))
+
+  def testParseLineWithEmptyValue(self):
+    importer = pymtgx.Importer(input_file='test/importer/data_with_empty.csv', 
+      format_spec_file='test/importer/indexed.format', 
+      output_file='test/importer/output', 
+      entity_files=['test/test_entities.mtz'],
+      delimiter=',', quotechar='"', skip_lines=1,
+      map_header=False)    
+
+    # Line 1: col 0 -> col 2
+    # Line 2: col 0 -> col 1
+    # The remaining four candidates contain at least one empty value
+    self.assertEqual(2, importer.number_of_edges)
   
   def testCreate(self):
     importer = pymtgx.Importer(input_file='test/importer/data.csv', 
