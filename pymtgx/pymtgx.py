@@ -28,7 +28,7 @@ default_types = {
 }
 
 class Pymtgx(networkx.DiGraph):
-  def __init__(self):		
+  def __init__(self):
     super(Pymtgx, self).__init__()
     self.positions = {}
     self.node_id = 0
@@ -38,41 +38,47 @@ class Pymtgx(networkx.DiGraph):
   def register_entities(self, path):
     z = zipfile.ZipFile(path, "r")
 
-    for filename in z.namelist():	
-      element = ElementTree.fromstring(z.read(filename))
+    for filename in z.namelist():
+      try:
+        element = ElementTree.fromstring(z.read(filename))
 
-      if element.tag == 'MaltegoEntity':
-        self.register_entity(element)
+        if element.tag == 'MaltegoEntity':
+          self.register_entity(element)
+      except:
+        pass
 
-  def register_entity(self, element):		
-    baseEntity = element.find(".//BaseEntity")			
-    field = element.find(".//Field")		
-		
+  def list_entities(self):
+    print '\n'.join(self.entities.keys())
+
+  def register_entity(self, element):
+    baseEntity = element.find(".//BaseEntity")
+    field = element.find(".//Field")
+
     if baseEntity != None:
       self.entities[element.attrib['id']] = {
-        'baseType': baseEntity.text				
-      }			
+        'baseType': baseEntity.text
+      }
     elif field != None:
       self.entities[element.attrib['id']] = {
         'name': field.attrib['name'],
         'dataType': field.attrib['type']
-      }	
-		
+      }
+
   def add_node(self, entityType, data):
-    node_key = entityType + str(data)
+    node_key = '%s%s' % (entityType, data)
 
     if node_key in self.node_cache:
       return self.node_cache[node_key]
 
-    current_id = 'n' + str(self.node_id)
+    current_id = u'n%s' % self.node_id
 
     self.node_cache[node_key] = current_id
 
-    self.node_id += 1		
-		
+    self.node_id += 1
+
     entity = self.entities[entityType]
 
-    if 'baseType' in entity:			
+    if 'baseType' in entity:
       entity = self.entities[entity['baseType']]
 
     renderer = EntityRenderer()
@@ -87,7 +93,7 @@ class Pymtgx(networkx.DiGraph):
     super(Pymtgx, self).add_edge(n0, n1, dict(MaltegoLink=MaltegoLink(label)))
 
   def layout(self, layout='spring_layout', space=100):
-    try: 
+    try:
       import matplotlib
 
       layout_func = getattr(networkx, layout)
@@ -108,11 +114,11 @@ class Pymtgx(networkx.DiGraph):
           'y': '0'
         }
 
-  def create(self, path, encoding='utf-8',prettyprint=True, layout='spring_layout', space=100):    
+  def create(self, path, encoding='utf-8',prettyprint=True, layout='spring_layout', space=100):
     self.layout(layout, space)
 
     writer = MaltegoWriter(encoding=encoding,prettyprint=prettyprint)
-    
+
     writer.add_graph_element(self)
 
     writer.xml.find('.//key[@attr.name="EntityRenderer"]').set('yfiles.type', "nodegraphics")
@@ -126,8 +132,8 @@ class Pymtgx(networkx.DiGraph):
       zf.close()
 
 class MaltegoEntity(object):
-  def __init__(self, entityType, entity, value):		
-    self.data = Element("data")		
+  def __init__(self, entityType, entity, value):
+    self.data = Element("data")
     entityElement = SubElement(self.data, "mtg:MaltegoEntity")
 
     entityElement.attrib = {
@@ -135,23 +141,23 @@ class MaltegoEntity(object):
       'type': entityType
     }
 
-    propertiesElement = SubElement(entityElement, "mtg:Properties")		
-		
+    propertiesElement = SubElement(entityElement, "mtg:Properties")
+
     self.add_entity_property(propertiesElement, entity, value)
 
-  def add_entity_property(self, parent, prop, value):				
+  def add_entity_property(self, parent, prop, value):
     propertyElement = SubElement(parent, "mtg:Property")
-		
+
     propertyElement.attrib = {
       'name': prop.get('name'),
       'type': prop.get('dataType', 'string')
     }
-		
+
     SubElement(propertyElement, "mtg:Value").text = value
 
 class MaltegoLink(MaltegoEntity):
   def __init__(self, label):
-    self.data = Element("data")   
+    self.data = Element("data")
 
     linkElement = SubElement(self.data, "mtg:MaltegoLink")
 
@@ -160,33 +166,33 @@ class MaltegoLink(MaltegoEntity):
       'type': 'maltego.link.manual-link'
     }
 
-    propertiesElement = SubElement(linkElement, "mtg:Properties")   
+    propertiesElement = SubElement(linkElement, "mtg:Properties")
 
     self.add_entity_property(propertiesElement, {'name': 'maltego.link.manual.type'}, label)
 
 class EntityRenderer(object):
-  def __init__(self):    
-    self.data = Element("data")   
+  def __init__(self):
+    self.data = Element("data")
 
     entityRendererElement = SubElement(self.data, "mtg:EntityRenderer")
 
     entityRendererElement.attrib['xmlns:mtg'] = 'http://maltego.paterva.com/xml/mtgx'
 
-    self.position = SubElement(entityRendererElement, "mtg:Position")   
+    self.position = SubElement(entityRendererElement, "mtg:Position")
 
-  def add_entity_property(self, parent, prop, value):       
+  def add_entity_property(self, parent, prop, value):
     propertyElement = SubElement(parent, "mtg:Property")
-    
+
     propertyElement.attrib = {
       'name': prop.get('name'),
       'displayName': prop.get('displayName'),
       'type': prop.get('dataType', 'string')
     }
-    
+
     SubElement(propertyElement, "mtg:Value").text = value
 
 class MaltegoWriter(graphml.GraphMLWriter):
-  def add_attributes(self, scope, xml_obj, data, default):        
-    for k,v in data.items():            
+  def add_attributes(self, scope, xml_obj, data, default):
+    for k,v in data.items():
       v.data.attrib['key'] = self.get_key(k, k, scope, None)
       xml_obj.append(v.data)
